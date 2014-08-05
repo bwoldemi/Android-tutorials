@@ -1,4 +1,4 @@
-The project contains  android tutorials.The tutorials arranged shorter and any begineer of android developer could use to lean this tutorials. However, I am not ressponsible for any kind of damange using this tutorial. 
+The project contains  Android tutorials.The tutorials arranged shorter and easy to understand. Android  beginner developers could use this tutorials  to practice  and develop their   programing skill.However, I am not responsible for any kind of damage using this tutorial. 
 
 
  
