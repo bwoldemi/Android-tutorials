@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;Voting.java&apos; to &apos;Ex2ESP/src/com.example.ex2esp&apos;&#x0A;- Original project: &apos;Vote04NoAsync_task&apos;&#x0A;- Destination element: &apos;Ex2ESP/src/com.example.ex2esp&apos;&#x0A;- Original element: &apos;fi.oulu.tol.vote04.model.Voting.java&apos;" description="Copy compilation unit" destination="=Ex2ESP/src&lt;com.example.ex2esp" element1="/src&lt;fi.oulu.tol.vote04.model{Voting.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1397800267760" units="1" version="1.0"/>
+</session>

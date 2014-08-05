@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;com.example.tutasyncktask.ListAapterTut&apos; to &apos;ArrayAapterTut&apos;&#x0A;- Original project: &apos;TutAsynckTask&apos;&#x0A;- Original element: &apos;com.example.tutasyncktask.ListAapterTut&apos;&#x0A;- Renamed element: &apos;com.example.tutasyncktask.ArrayAapterTut&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;ListAapterTut&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;com.example.tutasyncktask{ListAapterTut.java[ListAapterTut" matchStrategy="1" name="ArrayAapterTut" qualified="false" references="true" similarDeclarations="false" stamp="1396362819568" textual="false" version="1.0"/>
+</session>

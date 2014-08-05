@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LILI Home Care</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_task_detail">TaskDetail</string>
+    <string name="move_nfc">Please tap NFC tag, To diplay Task List</string>
+    <string name="title_activity_lili_home_care">LiliHomeCareActivity</string>
+
+</resources>

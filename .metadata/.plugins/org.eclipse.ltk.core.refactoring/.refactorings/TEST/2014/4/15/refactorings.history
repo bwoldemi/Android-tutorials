@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;TestPublicClass.java&apos; to &apos;TutService/src/com.example.tutservice&apos;&#x0A;- Original project: &apos;TEST&apos;&#x0A;- Destination element: &apos;TutService/src/com.example.tutservice&apos;&#x0A;- Original element: &apos;tes.bereket.TestPublicClass.java&apos;" description="Copy compilation unit" destination="=TutService/src&lt;com.example.tutservice" element1="/src&lt;tes.bereket{TestPublicClass.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1397222041206" units="1" version="1.0"/>
+</session>

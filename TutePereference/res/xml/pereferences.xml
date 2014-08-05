@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+   
+   <CheckBoxPreference
+       android:title="tea"
+       android:key="first_key"
+       android:defaultValue="true"/> 
+    <CheckBoxPreference
+       android:title="Coffee"
+       android:key="second_key"
+       android:defaultValue="true"/> 
+     <EditTextPreference
+       android:key="text"
+       android:summary="Other"
+       />
+       
+</PreferenceScreen>

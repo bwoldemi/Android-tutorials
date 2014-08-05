@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="tut.bereket.menutut.MainActivity" >
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        />
+    
+     <item
+        android:id="@+id/Two"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+       />
+     <item
+        android:id="@+id/Three"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        />
+    
+</menu>

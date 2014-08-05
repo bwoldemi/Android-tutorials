@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LILI Tag Reader Writer</string>
+    <string name="hello_world">Click Buttons To Read Write</string>
+    <string name="action_settings">Settings</string>
+    <string name="tagReader">Tag Reader</string>
+    <string name="tagWriter">Tag Writer</string>
+    <string name="tagReaderText">TAG READER</string>
+    <string name="tagWriterText">Write on Tag</string>
+    <string name="title_activity_tag_writer">TagWriter</string>
+    <string name="title_activity_tag_reader">TagReader</string>
+    <string name="size">Size</string>
+    <string name="id">Id</string>
+    <string name="type">Type</string>
+    <string name="content">Content</string>
+    <string name="title_activity_nfctag_writer">NFCTagWriter</string>
+	<string name="tag_writer">Please Move Your Phone To NFC Tag</string>
+	
+</resources>

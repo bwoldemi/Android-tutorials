@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="lili.fi.History"
+    tools:ignore="MergeRootFrame"
+     android:background="#0666FF"
+     android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textViewHistory"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10sp"
+        android:text="@string/move_nfc"
+        android:textColor="#FFFFFF"
+        android:scrollbars="vertical"
+        />
+
+</LinearLayout>

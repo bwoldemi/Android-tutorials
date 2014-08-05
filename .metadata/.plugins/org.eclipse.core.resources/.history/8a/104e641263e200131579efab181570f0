@@ -1,0 +1,135 @@
+package lili.oulu.fi;
+
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.Ndef;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
+import android.widget.Toast;
+
+public class TagReader extends Activity {
+
+	public static final int STATE_OFF = 1;
+	public static final int STATE_TURNING_ON = 2;
+	public static final int STATE_ON = 3;
+	public static final int STATE_TURNING_OFF = 4;
+
+	public static final String Tag = TagWriter.class.getName();
+
+	private NfcAdapter nfcAdapter;
+	private IntentFilter[] writeTagFilter;
+	private PendingIntent nfcPendingIntent;
+
+	
+	protected BroadcastReceiver nfcStateChangeBroadcastReceiver;
+
+	protected boolean detecting = false;
+
+	/** NXP chips support Mifare Classic, others do not. */
+	protected boolean nxpMifareClassic;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_tag_reader);
+
+		PackageManager pc = getPackageManager();
+
+		if (pc.hasSystemFeature(PackageManager.FEATURE_NFC)
+				&& NfcAdapter.getDefaultAdapter(this) != null) {
+			Log.d(Tag, "Has Nfc sensor");
+			initialize();
+			
+		} else {
+			Log.d(Tag, "Has No Nfc sensor");
+			Toast.makeText(this, "NFC not Found", Toast.LENGTH_SHORT).show();
+		}
+
+		nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+	}
+
+	
+
+
+	// initialize
+	public void initialize() {
+		nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		//IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+		IntentFilter ndefDetected = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
+//		IntentFilter tecDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+
+		nfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
+				getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+		writeTagFilter = new IntentFilter[] { ndefDetected };
+		
+
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (nfcAdapter != null) {
+			nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
+					writeTagFilter, null);
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (nfcAdapter != null) {
+			nfcAdapter.disableForegroundDispatch(this);
+		}
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		
+		if(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())){
+			Parcelable[] parcelable= intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+			if(parcelable==null){
+				Log.d("Parcable", "null");
+				
+			}else{
+				 for(Parcelable p: parcelable){
+				 Log.d("id Parcable", p.toString());
+				 }
+			}
+			Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+			Log.d("Tag Id", tag.getId().toString());
+			Log.d("Tag Class Name", tag.getId().toString());
+			Log.d("Tag To String",tag.toString());
+			
+
+		}
+	}
+	
+	
+	public String isWritable(Tag tag){
+		Ndef ndef = Ndef.get(tag);
+		if(ndef.isWritable()){
+			return "Read Write";
+		}else {
+			return "Read Only";
+		}
+		
+	}
+	public void format(){
+		
+	}
+	
+
+	
+
+	
+
+}

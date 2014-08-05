@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Default settings" >
+        <EditTextPreference
+            android:defaultValue="http://www.tutbereket.net/liliTest/liliSample.json"
+            android:key="url"
+            android:summary="Change the URL"
+            android:title="LILI URL" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

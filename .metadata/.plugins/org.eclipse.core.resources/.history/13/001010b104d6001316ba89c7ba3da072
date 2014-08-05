@@ -1,0 +1,349 @@
+package fi.oulu.tol.vote.service;
+
+import java.text.ParseException;
+import java.util.UUID;
+import java.util.Vector;
+
+import org.json.JSONException;
+
+import fi.oulu.tol.vote.R;
+import fi.oulu.tol.vote.model.Voting;
+import fi.oulu.tol.vote.server.VoteServer;
+import fi.oulu.tol.vote.server.VoteServerObserver;
+import fi.oulu.tol.vote.server.VoteServerProxy;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Binder;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
+import android.widget.Toast;
+
+public class VoteService extends Service implements  VoteServiceInterface, VoteServerObserver{
+	private final VoteBinder binder = new VoteBinder();
+	private VotingContainer votingContainer;
+	private int mCurrentVotingIndex=0;
+	private VoteServer proxy = null;
+	private VoteIdRepository mVoteIdRepository;
+	private enum Notification { VOTINGS_RECEIVED, NO_NEW_VOTINGS_RECEIVED, VOTE_POSTED, ERROR };
+	private VoteServerObserver mObserver;
+	private SharedPreferences userSettings;
+	private static final String URL = "url";
+	private static final String TAG = "VOTE_SERVICE"; 
+	
+    @Override
+    public void onCreate() {
+    	proxy = new VoteServerProxy(); // You will implement the VoteServer interface called VoteServerProxy later below!
+        proxy.initialize(getBaseContext(), this); //preferences
+        userSettings = PreferenceManager.getDefaultSharedPreferences(this);	
+		String url = userSettings.getString(URL, "http://aani.opimobi.com:2014");
+        proxy.setServerAddress(url);
+        proxy.forceRefresh();
+        mVoteIdRepository = new VoteIdRepository(this);
+    }
+	public VoteService(){
+		votingContainer = new VotingContainer();
+		mObserver = new VoteServerObserver() {
+			@Override
+			public void votingsReceived() {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void noNewVotingsAvailable() {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void votePosted() {
+				// TODO Auto-generated method stub	
+			}
+
+			@Override
+			public void errorNotification(String error) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+
+	}
+	//initialize it
+			
+	@Override
+	public IBinder onBind(Intent intent) {
+		
+		return binder;
+	}
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		
+		return START_STICKY;
+	}
+
+	@Override
+	public void setObserver(VoteServerObserver obs) {
+		this.mObserver = obs;
+	}
+
+	@Override
+	public void updateServerSettings() {
+		userSettings = PreferenceManager.getDefaultSharedPreferences(this);	
+		String url = userSettings.getString(URL, URL);
+		proxy.setServerAddress(url);
+		proxy.forceRefresh();
+		Log.i("url changed",url );
+	}
+
+	@Override
+	public Voting getCurrentVoting() {
+		if(mCurrentVotingIndex >= votingContainer.size()){
+			return null;
+		}
+		return votingContainer.get(mCurrentVotingIndex);
+	}
+
+	@Override
+	public void setCurrentVoting(int index) {
+		int totalVotings = votingContainer.size();
+		if (totalVotings >= index && index >= 0) {
+			mCurrentVotingIndex = index;
+		}
+	}
+
+	@Override
+	public boolean getVotingFromServer(Voting voting) {
+		proxy.retrieveOneVoting(voting);
+		return false;
+	}
+
+	@Override
+	public int getCurrentVotingIndex() {
+		return mCurrentVotingIndex;
+	}
+
+	@Override
+	public int getVotingCount() {
+		return votingContainer.size();
+	}
+
+	@Override
+	public void nextVoting() {
+		int totalVotings=votingContainer.size()-1;
+		if(mCurrentVotingIndex==totalVotings){
+			mCurrentVotingIndex =0;
+		}else{
+			mCurrentVotingIndex++;
+		}
+	}
+
+	@Override
+	public void previousVoting() {
+		int totalVotings=votingContainer.size()-1;
+		if(mCurrentVotingIndex==0){
+			mCurrentVotingIndex =totalVotings; 
+		}else{
+			mCurrentVotingIndex--;
+		}
+	}
+
+
+	@Override
+	public int getVotingIndex(Voting voting) {
+//		in Service's getVotingIndex, if the Voting object cannot be found from the Service's container, 
+//		you could initiate a request to the server to get it, using VoteServer.retrieveOneVoting. 
+//		This is optional to implement, however, since it is related to the QR code functionality 
+//		which is an optional feature to implement.
+		
+		return votingContainer.getIndex(voting);
+		// TODO if it is -1, we check from server to get the voting 
+	}
+
+	@Override
+	public void SubmitVote() {
+		if (votingContainer.get(mCurrentVotingIndex).isOpen()) {
+			proxy.submitVote(votingContainer.get(mCurrentVotingIndex));
+			mVoteIdRepository.saveLocalVoteUuid(getCurrentVoting());
+		}
+	}
+
+	@Override
+	public boolean forceRefresh() throws ParseException {
+		proxy.forceRefresh();
+		proxy.getNextVoting();
+		return false;
+	}
+
+	@Override
+	public void applyVotingsFilterFromSettings() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void applySimpleFilter(VotingFilterItems showWhat) {
+		mCurrentVotingIndex = 0;
+		switch (showWhat) {
+		case SHOW_ALL:
+			votingContainer.applyFilter(true, true, true);
+			break;
+		case SHOW_CLOSED:
+			votingContainer.applyFilter(true, false, false);
+			break;
+		case SHOW_OPEN:
+			votingContainer.applyFilter(false, true, false);
+			break;
+		case SHOW_FUTURE:
+			votingContainer.applyFilter(false, false, true);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/***
+	 * nested votebinder class
+	 * @author 
+	 *
+	 */
+	public class VoteBinder extends Binder {
+
+		public VoteService getService() {
+			return VoteService.this;
+
+		}
+	}
+
+	@Override
+	public void votingsReceived() {
+		Log.i(TAG, "Voting received outside loop");
+		Voting voting = proxy.getNextVoting();
+		//Log.d(TAG,voting.getmText());
+		while (voting != null) {
+//			Log.i(TAG, "Voting received inside loop" + voting.getmId() + "voteID" + voting.getVoteUuid());
+//			String voteUuid = mVoteIdRepository.findLocalUuidForVotingUuid(voting.getmId().toString());
+//			if (voteUuid != null) {
+//				voting.setVoteUuid(UUID.fromString(voteUuid));
+//			} else {
+//				// mVoteIdRepository.saveLocalVoteUuid(voting);
+//			}
+			votingContainer.add(voting);
+			
+			if (voting.getmEndDate() != null && voting.isClosed()) {
+				proxy.retrieveVotingResults(voting);
+				Log.d(TAG, "Votings result closing");
+			}
+			voting = proxy.getNextVoting();
+		}// for while loop
+			// After the loop, if you did get votings from the protocol,
+			// notify the observer of the Service (if it has one) that new
+			// votings arrived.
+			// i.e we notify the voteActivity
+		if (mObserver != null) {
+			mObserver.votingsReceived();
+			Log.i(TAG,
+					"Voting received observer notified, i.e. observer is not null");
+		}
+
+	}
+	@Override
+	public void noNewVotingsAvailable() {
+		if (mObserver != null) {
+			mObserver.votingsReceived();
+			//notifyUser(Notification.VOTINGS_RECEIVED, null);
+			
+		}else {
+			
+		}
+	}
+	@Override
+	public void votePosted() {
+		
+		if (mObserver != null) {
+			mObserver.votingsReceived();
+			//notifyUser(Notification.VOTINGS_RECEIVED, null);
+		}else {
+			
+		}
+		
+		
+	}
+	@Override
+	public void errorNotification(String error) {
+			Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+		
+	}
+	
+	private void notifyUser (Notification n, String info) {
+	     if (null != mObserver) {
+	         switch (n) {
+	         case VOTINGS_RECEIVED:
+	        	 mObserver.votingsReceived();
+	             break;
+	         case NO_NEW_VOTINGS_RECEIVED:
+	        	 mObserver.noNewVotingsAvailable();
+	             break;
+	         case VOTE_POSTED:
+	        	 mObserver.votePosted();
+	             break;
+	         case ERROR:
+	        	 mObserver.errorNotification(info);
+	             break;
+	         }
+	     } else {
+	    	 
+	    	 //could change the strings later
+	         String msg = null;
+	         switch (n) {
+	         case VOTINGS_RECEIVED:
+	             msg = getString(R.id.voting_topic);
+	             break;
+	         case NO_NEW_VOTINGS_RECEIVED:
+	             msg = getString(R.id.voting_number);
+	             break;
+	         case VOTE_POSTED:
+	             msg = getString(R.id.submit_vote);
+	             break;
+	         case ERROR:
+	             msg = getString(R.id.action_refresh);
+	             msg += " " + info;
+	             break;
+	         }
+//	         NotificationCompat.Builder mBuilder =
+//	        	        new NotificationCompat.Builder(this)
+//	        	        .setSmallIcon(R.drawable.ic_launcher)
+//	        	        .setContentTitle("My notification")
+//	        	        .setContentText("Hello World!");
+//	        	// Creates an explicit intent for an Activity in your app
+//	        	Intent resultIntent = new Intent(this, ResultActivity.class);
+//
+//	        	// The stack builder object will contain an artificial back stack for the
+//	        	// started Activity.
+//	        	// This ensures that navigating backward from the Activity leads out of
+//	        	// your application to the Home screen.
+//	        	TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+//	        	// Adds the back stack for the Intent (but not the Intent itself)
+//	        	stackBuilder.addParentStack(ResultActivity.class);
+//	        	// Adds the Intent that starts the Activity to the top of the stack
+//	        	stackBuilder.addNextIntent(resultIntent);
+//	        	PendingIntent resultPendingIntent =
+//	        	        stackBuilder.getPendingIntent(
+//	        	            0,
+//	        	            PendingIntent.FLAG_UPDATE_CURRENT
+//	        	        );
+//	        	mBuilder.setContentIntent(resultPendingIntent);
+//	        	NotificationManager mNotificationManager =
+//	        	    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//	        	// mId allows you to update the notification later on.
+//	        	mNotificationManager.notify(mId, mBuilder.build());
+	     }
+	       
+	}
+	
+}

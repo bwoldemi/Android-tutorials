@@ -1,0 +1,84 @@
+import java.util.Vector;
+
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+		int []a= {-1, 5, 8, 17, 15};
+		
+		Main m= new Main();
+		
+		System.out.println(m.isCubePowerful(100));
+	}
+	
+	int [] doIntegerBasedRounding(int[ ] a, int n) {
+		
+		
+		if(n<=0){
+			return a;
+		}
+		int result[]=new int[a.length];
+		
+		for(int i=0; i<a.length; i++){
+			if(a[i]%n==0 || a[i]<0){
+				result[i-1]=a[i];
+			}else{
+				int min = a[i]/n*n;
+				int max = a[i]/n*n+n;
+				
+				
+				
+				if((a[i]-min)==(max-a[i])){
+					result[i]=max;
+				}else if((a[i]-min)>(max-a[i])){
+					result[i]=max;
+					
+				}else{
+					result[i]=min;
+				}
+			}
+		}
+		
+		
+		return result;
+	}
+	
+	int [] decodeArray(int a[]){
+		if(a.length<2){
+			return a;
+		}
+		
+		int result[]= new int[a.length-1];
+		
+		
+		
+		for(int i=1;i<a.length;i++){
+			result[i-1]=  Math.abs(a[i-1]-a[i]);	
+		}
+		
+		if(a[0]<0){
+			result[0]=result[0]*-1;
+		}
+		return result;
+	}
+int isCubePowerful(int n){
+	Vector<Integer> cubeNumbersLessthanNumber = new Vector<Integer>();
+	
+	for(int i=0; i<n ; i++){
+		if((i*i*i)<n){
+			cubeNumbersLessthanNumber.add(i*i*i);
+		}else if((i*i*i)>n){
+			break;
+		}
+		int sum+0;
+		for(Integer x: cubeNumbersLessthanNumber){
+			sum=x+sum;
+		}
+	}
+	
+	
+	
+	return 0;
+}
+}

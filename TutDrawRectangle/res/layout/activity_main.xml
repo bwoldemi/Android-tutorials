@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="tutBereket.net.MainActivity"
+    tools:ignore="MergeRootFrame"
+    android:orientation="vertical">
+    
+    <LinearLayout
+        android:id="@+id/optionCustom"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"/>
+</LinearLayout>
